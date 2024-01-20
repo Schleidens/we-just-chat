@@ -1,4 +1,5 @@
 import { signal } from '@preact/signals-react';
+import { apiFetch } from '../utils/api.fetch';
 
 export interface Users {
   id: number;
@@ -6,10 +7,44 @@ export interface Users {
   user_id: string;
 }
 
-const users = signal<null | Users>({
-  id: 1,
-  username: 'johndoe',
-  user_id: 'tiJan',
-});
+const users = signal<null | Users>(null);
 
-export default { users };
+const authLoading = signal<boolean>(true);
+
+const getCurrentUserInformation = async () => {
+  try {
+    console.log('ok');
+
+    authLoading.value = true;
+
+    const currentUser = await apiFetch('me');
+
+    users.value = currentUser;
+  } catch (error) {
+    users.value = null;
+    console.log(error);
+  } finally {
+    authLoading.value = false;
+  }
+};
+
+const setUsername = async (username: string) => {
+  try {
+    authLoading.value = true;
+
+    await apiFetch('me', {
+      method: 'PUT',
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({ username }),
+    });
+  } catch (error) {
+    console.log(error);
+  } finally {
+    authLoading.value = false;
+    await getCurrentUserInformation();
+  }
+};
+
+export default { users, authLoading, getCurrentUserInformation, setUsername };

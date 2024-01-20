@@ -58,6 +58,13 @@ main.login__page {
       font-weight: bold;
 
       padding: 0.7em 2em;
+
+      line-height: 2;
+
+      .google-logo {
+        margin-top: -4px;
+        margin-left: 5px;
+      }
     }
 
     div.error {
@@ -71,4 +78,9 @@ main.login__page {
       max-width: 300px;
     }
   }
+}
+
+.loader {
+  width: 100%;
+  height: 100vh;
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
@@ -6,9 +6,17 @@ import LoginPage from './pages/Login';
 import SetUsernamePage from './pages/SetUserName';
 import ChatPage from './pages/ChatPage';
 import usersStore from './store/users.store';
+import { auth } from './firebase/main';
 
 const App = () => {
   const user = usersStore.users.value;
+  const _getCurrentUserInformation = usersStore.getCurrentUserInformation;
+
+  useEffect(() => {
+    auth.onAuthStateChanged(() => {
+      _getCurrentUserInformation();
+    });
+  }, [_getCurrentUserInformation]);
 
   if (user === null) {
     return (
