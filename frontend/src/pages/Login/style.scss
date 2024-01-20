@@ -4,8 +4,71 @@ main.login__page {
   min-height: 100vh;
 
   display: flex;
-  justify-content: center;
-  align-items: center;
 
-  text-align: center;
+  @media (max-width: 768px) {
+    flex-direction: column-reverse;
+  }
+
+  .intro {
+    width: 60%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    padding-left: 2em;
+
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' version='1.1' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:svgjs='http://svgjs.dev/svgjs' width='1440' height='560' preserveAspectRatio='none' viewBox='0 0 1440 560'%3e%3cg mask='url(%26quot%3b%23SvgjsMask1007%26quot%3b)' fill='none'%3e%3cpath d='M528.18 645.19C676.51 631.3 775.84 320.45 1027.64 320.18 1279.44 319.91 1393.01 512.71 1527.1 516.18' stroke='rgba(0%2c 125%2c 255%2c 0.58)' stroke-width='2'%3e%3c/path%3e%3cpath d='M605.04 590.49C707.77 571.1 660.08 321.2 916.44 311.39 1172.81 301.58 1379.35 166.75 1539.25 165.79' stroke='rgba(0%2c 125%2c 255%2c 0.58)' stroke-width='2'%3e%3c/path%3e%3cpath d='M577.8 639.95C698.86 608.48 660.6 276.96 921.64 276.47 1182.67 275.98 1430.17 476.01 1609.31 478.07' stroke='rgba(0%2c 125%2c 255%2c 0.58)' stroke-width='2'%3e%3c/path%3e%3cpath d='M160.59 585.02C299.01 561.75 362.65 226.12 588.98 222.11 815.31 218.1 803.18 292.11 1017.37 292.11 1231.57 292.11 1337.24 222.34 1445.76 222.11' stroke='rgba(0%2c 125%2c 255%2c 0.58)' stroke-width='2'%3e%3c/path%3e%3cpath d='M373.72 592.75C490.58 572.39 441.2 291.88 733.13 282.98 1025.07 274.08 1268.88 143.63 1451.96 142.98' stroke='rgba(0%2c 125%2c 255%2c 0.58)' stroke-width='2'%3e%3c/path%3e%3c/g%3e%3cdefs%3e%3cmask id='SvgjsMask1007'%3e%3crect width='1440' height='560' fill='white'%3e%3c/rect%3e%3c/mask%3e%3c/defs%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-size: cover;
+    p {
+      font-size: 2.5em;
+      font-weight: 700;
+
+      span {
+        color: #2323ed;
+      }
+    }
+
+    @media (max-width: 768px) {
+      width: 100%;
+      height: 60vh;
+    }
+  }
+
+  .login {
+    width: 40%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    background-color: #252525;
+
+    @media (max-width: 768px) {
+      width: 100%;
+      height: 40vh;
+    }
+
+    div.btn {
+      background-color: #fff;
+      color: #252525;
+
+      font-weight: bold;
+
+      padding: 0.7em 2em;
+    }
+
+    div.error {
+      color: #2323ed;
+
+      margin-top: 0.5em;
+
+      text-align: center;
+
+      width: 100%;
+      max-width: 300px;
+    }
+  }
 }
