@@ -4,6 +4,8 @@ import express from 'express';
 import * as admin from 'firebase-admin';
 import cors from 'cors';
 import usersRoutes from './routes/v1/users/users.routes';
+import discussionsRoutes from './routes/v1/messages/discussions.routes';
+import messagesRoutes from './routes/v1/messages/messages.routes';
 
 import { authMiddleware } from './middleware/auth';
 
@@ -31,6 +33,8 @@ App.post('/foo', (req, res) => {
 });
 
 App.use(authMiddleware, usersRoutes);
+App.use(authMiddleware, discussionsRoutes);
+App.use(authMiddleware, messagesRoutes);
 
 App.listen(3000, () => {
   console.log('server started');
