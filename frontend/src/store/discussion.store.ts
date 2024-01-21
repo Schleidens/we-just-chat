@@ -1,5 +1,6 @@
 import { signal } from '@preact/signals-react';
 import { Users } from './users.store';
+import { apiFetch } from '../utils/api.fetch';
 
 export interface Discussion {
   id: number;
@@ -19,26 +20,7 @@ export interface Message {
 
 const selectedDiscussion = signal<null | Discussion>(null);
 
-const ownedDiscussions = signal<Discussion[]>([
-  {
-    id: 212,
-    last_message: 'ti jinyo kap mande eske gen pate',
-    user1: 111,
-    user2: 222,
-    participants: [
-      {
-        id: 11,
-        username: 'TiDon',
-        user_id: '55',
-      },
-      {
-        id: 1,
-        username: 'TiJinyo',
-        user_id: '55',
-      },
-    ],
-  },
-]);
+const ownedDiscussions = signal<Discussion[]>([]);
 
 const setDiscussion = (discussion: Discussion | null) => {
   selectedDiscussion.value = discussion;
@@ -97,6 +79,33 @@ const messagesInDiscussion = signal<Message[]>([
   },
 ]);
 
+const getDiscussionsList = async () => {
+  try {
+    const discussions = await apiFetch('discussions');
+
+    ownedDiscussions.value = discussions;
+
+    console.log(discussions);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getMessagesInDiscussion = async () => {
+  try {
+    messagesInDiscussion.value = [];
+    const messages = await apiFetch(
+      `messages?id=${selectedDiscussion.value?.id}`
+    );
+
+    console.log(messages);
+
+    messagesInDiscussion.value = messages;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export {
   selectedDiscussion,
   ownedDiscussions,
@@ -105,4 +114,6 @@ export {
   getDiscussionName,
   getSenderName,
   setDiscussion,
+  getDiscussionsList,
+  getMessagesInDiscussion,
 };

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import SimpleBar from 'simplebar-react';
 
 import Loader from '../../components/Loader';
@@ -13,6 +13,8 @@ import {
   getSenderName,
   messagesLoading,
   messagesInDiscussion,
+  getDiscussionsList,
+  getMessagesInDiscussion,
 } from '../../store/discussion.store';
 import usersStore from '../../store/users.store';
 
@@ -22,7 +24,19 @@ const ChatPage = () => {
   const _messagesLoading = messagesLoading.value;
   const _messagesInDiscussion = messagesInDiscussion.value;
 
+  console.log({ ok: _messagesInDiscussion });
+
   const _users = usersStore.users.value;
+
+  console.log(_ownedDiscussions);
+
+  useEffect(() => {
+    getDiscussionsList();
+  }, []);
+
+  useEffect(() => {
+    getMessagesInDiscussion();
+  }, [_selectedDiscussion]);
 
   return (
     <>
@@ -41,21 +55,26 @@ const ChatPage = () => {
             </button>
           </div>
           <ul className='list-group'>
-            {_ownedDiscussions.map((discussion, index) => (
-              <li
-                key={index}
-                className='list-group-item d-flex justify-content-between align-items-center'
-                onClick={() => setDiscussion(discussion)}
-              >
-                <div className='ms-2 me-auto'>
-                  <div className='fw-bold'>
-                    {getDiscussionName(12, discussion.participants)?.username}
+            {_ownedDiscussions.map((discussion, index) => {
+              return (
+                <li
+                  key={index}
+                  className='list-group-item d-flex justify-content-between align-items-center'
+                  onClick={() => setDiscussion(discussion)}
+                >
+                  <div className='ms-2 me-auto'>
+                    <div className='fw-bold'>
+                      {
+                        getDiscussionName(_users?.id, discussion.participants)
+                          ?.username
+                      }
+                    </div>
+                    {discussion.last_message}
                   </div>
-                  {discussion.last_message}
-                </div>
-                <span className='badge bg-primary rounded-pill'>14</span>
-              </li>
-            ))}
+                  <span className='badge bg-primary rounded-pill'>14</span>
+                </li>
+              );
+            })}
           </ul>
         </div>
 
@@ -83,34 +102,38 @@ const ChatPage = () => {
                 <SimpleBar style={{ maxHeight: 740 }}>
                   {!_messagesLoading && (
                     <ul>
-                      {_messagesInDiscussion.map((message, index) => (
-                        <li
-                          key={index}
-                          className={
-                            _users?.id === message.sender_id
-                              ? 'sended-message'
-                              : 'received-message'
-                          }
-                        >
-                          <div
+                      {_messagesInDiscussion.map((message, index) => {
+                        console.log(message);
+
+                        return (
+                          <li
+                            key={index}
                             className={
                               _users?.id === message.sender_id
-                                ? 'sended-message-item'
-                                : 'received-message-item'
+                                ? 'sended-message'
+                                : 'received-message'
                             }
                           >
-                            {message.text_body}
-                          </div>
-                          <h5>
-                            {
-                              getSenderName(
-                                message.sender_id,
-                                _selectedDiscussion.participants
-                              )?.username
-                            }
-                          </h5>
-                        </li>
-                      ))}
+                            <div
+                              className={
+                                _users?.id === message.sender_id
+                                  ? 'sended-message-item'
+                                  : 'received-message-item'
+                              }
+                            >
+                              {message.text_body}
+                            </div>
+                            <h5>
+                              {
+                                getSenderName(
+                                  message.sender_id,
+                                  _selectedDiscussion.participants
+                                )?.username
+                              }
+                            </h5>
+                          </li>
+                        );
+                      })}
                     </ul>
                   )}
                   {_messagesLoading && <Loader />}
