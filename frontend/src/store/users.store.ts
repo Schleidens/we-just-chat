@@ -13,8 +13,6 @@ const authLoading = signal<boolean>(true);
 
 const getCurrentUserInformation = async () => {
   try {
-    console.log('ok');
-
     authLoading.value = true;
 
     const currentUser = await apiFetch('me');

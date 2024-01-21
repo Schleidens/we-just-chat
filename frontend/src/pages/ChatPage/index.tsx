@@ -11,6 +11,7 @@ import {
   setDiscussion,
   getDiscussionName,
   getSenderName,
+  getMessageTimeFromDate,
   messagesLoading,
   messagesInDiscussion,
   getDiscussionsList,
@@ -24,11 +25,7 @@ const ChatPage = () => {
   const _messagesLoading = messagesLoading.value;
   const _messagesInDiscussion = messagesInDiscussion.value;
 
-  console.log({ ok: _messagesInDiscussion });
-
   const _users = usersStore.users.value;
-
-  console.log(_ownedDiscussions);
 
   useEffect(() => {
     getDiscussionsList();
@@ -65,8 +62,10 @@ const ChatPage = () => {
                   <div className='ms-2 me-auto'>
                     <div className='fw-bold'>
                       {
-                        getDiscussionName(_users?.id, discussion.participants)
-                          ?.username
+                        getDiscussionName(
+                          _users?.id as number,
+                          discussion.participants
+                        )?.username
                       }
                     </div>
                     {discussion.last_message}
@@ -90,7 +89,7 @@ const ChatPage = () => {
               <span>
                 {
                   getDiscussionName(
-                    _users?.id,
+                    _users?.id as number,
                     _selectedDiscussion.participants
                   )?.username
                 }
@@ -103,8 +102,6 @@ const ChatPage = () => {
                   {!_messagesLoading && (
                     <ul>
                       {_messagesInDiscussion.map((message, index) => {
-                        console.log(message);
-
                         return (
                           <li
                             key={index}
@@ -114,6 +111,26 @@ const ChatPage = () => {
                                 : 'received-message'
                             }
                           >
+                            <div className='header__message'>
+                              <img
+                                className='header__message-img'
+                                src='https://ik.imagekit.io/nv2j2amfx9/avatar'
+                                alt=''
+                              />
+                              <span className='header__message-data'>
+                                <h5>
+                                  {
+                                    getSenderName(
+                                      message.sender_id,
+                                      _selectedDiscussion.participants
+                                    )?.username
+                                  }
+                                </h5>
+                                <h6>
+                                  {getMessageTimeFromDate(message.created_at)}
+                                </h6>
+                              </span>
+                            </div>
                             <div
                               className={
                                 _users?.id === message.sender_id
@@ -123,21 +140,14 @@ const ChatPage = () => {
                             >
                               {message.text_body}
                             </div>
-                            <h5>
-                              {
-                                getSenderName(
-                                  message.sender_id,
-                                  _selectedDiscussion.participants
-                                )?.username
-                              }
-                            </h5>
                           </li>
                         );
                       })}
                     </ul>
                   )}
-                  {_messagesLoading && <Loader />}
                 </SimpleBar>
+
+                {_messagesLoading && <Loader />}
               </div>
 
               <div className='new-message'>

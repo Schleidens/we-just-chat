@@ -22,9 +22,16 @@ const selectedDiscussion = signal<null | Discussion>(null);
 
 const ownedDiscussions = signal<Discussion[]>([]);
 
+const messagesLoading = signal<boolean>(false);
+
+const messagesInDiscussion = signal<Message[]>([]);
+
+//focus discussion data
 const setDiscussion = (discussion: Discussion | null) => {
   selectedDiscussion.value = discussion;
 };
+
+//simple utils to clear data in messages
 
 const getDiscussionName = (loggedUserId: number, users: Users[]) => {
   return users.find((user) => user.id !== loggedUserId);
@@ -34,58 +41,21 @@ const getSenderName = (loggedUserId: number, users: Users[]) => {
   return users.find((user) => user.id === loggedUserId);
 };
 
-const messagesLoading = signal<boolean>(false);
+const getMessageTimeFromDate = (incomingDate: string) => {
+  const dateObject = new Date(incomingDate);
 
-const messagesInDiscussion = signal<Message[]>([
-  {
-    id: 1,
-    sender_id: 1,
-    discussion_id: 2,
-    text_body:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-    created_at: 'jodia',
-  },
-  {
-    id: 2,
-    sender_id: 11,
-    discussion_id: 2,
-    text_body:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-    created_at: 'jodia',
-  },
-  {
-    id: 2,
-    sender_id: 11,
-    discussion_id: 2,
-    text_body:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-    created_at: 'jodia',
-  },
-  {
-    id: 2,
-    sender_id: 1,
-    discussion_id: 2,
-    text_body:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-    created_at: 'jodia',
-  },
-  {
-    id: 2,
-    sender_id: 11,
-    discussion_id: 2,
-    text_body:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-    created_at: 'jodia',
-  },
-]);
+  const formattedTime = dateObject.toLocaleTimeString();
+
+  return formattedTime;
+};
+
+//data utils
 
 const getDiscussionsList = async () => {
   try {
     const discussions = await apiFetch('discussions');
 
     ownedDiscussions.value = discussions;
-
-    console.log(discussions);
   } catch (error) {
     console.log(error);
   }
@@ -94,15 +64,18 @@ const getDiscussionsList = async () => {
 const getMessagesInDiscussion = async () => {
   try {
     messagesInDiscussion.value = [];
+
+    messagesLoading.value = true;
+
     const messages = await apiFetch(
       `messages?id=${selectedDiscussion.value?.id}`
     );
 
-    console.log(messages);
-
     messagesInDiscussion.value = messages;
   } catch (error) {
     console.log(error);
+  } finally {
+    messagesLoading.value = false;
   }
 };
 
@@ -111,9 +84,10 @@ export {
   ownedDiscussions,
   messagesLoading,
   messagesInDiscussion,
+  setDiscussion,
   getDiscussionName,
   getSenderName,
-  setDiscussion,
+  getMessageTimeFromDate,
   getDiscussionsList,
   getMessagesInDiscussion,
 };
