@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import SimpleBar from 'simplebar-react';
 
 import Loader from '../../components/Loader';
+import UsersListModal from '../../components/UsersListModal';
 
 import './style.scss';
 
@@ -25,7 +26,7 @@ const ChatPage = () => {
   const _messagesLoading = messagesLoading.value;
   const _messagesInDiscussion = messagesInDiscussion.value;
 
-  const _users = usersStore.users.value;
+  const _user = usersStore.user.value;
 
   useEffect(() => {
     getDiscussionsList();
@@ -46,10 +47,15 @@ const ChatPage = () => {
           <div className='new-chat'>
             <button
               type='button'
-              className='btn btn-success'
+              className='btn btn-success new-chat-btn'
+              data-bs-toggle='modal'
+              data-bs-target='#exampleModal'
             >
               New Chat
             </button>
+
+            {/* modal for lis of users */}
+            <UsersListModal />
           </div>
           <ul className='list-group'>
             {_ownedDiscussions.map((discussion, index) => {
@@ -63,7 +69,7 @@ const ChatPage = () => {
                     <div className='fw-bold'>
                       {
                         getDiscussionName(
-                          _users?.id as number,
+                          _user?.id as number,
                           discussion.participants
                         )?.username
                       }
@@ -89,7 +95,7 @@ const ChatPage = () => {
               <span>
                 {
                   getDiscussionName(
-                    _users?.id as number,
+                    _user?.id as number,
                     _selectedDiscussion.participants
                   )?.username
                 }
@@ -106,7 +112,7 @@ const ChatPage = () => {
                           <li
                             key={index}
                             className={
-                              _users?.id === message.sender_id
+                              _user?.id === message.sender_id
                                 ? 'sended-message'
                                 : 'received-message'
                             }
@@ -133,7 +139,7 @@ const ChatPage = () => {
                             </div>
                             <div
                               className={
-                                _users?.id === message.sender_id
+                                _user?.id === message.sender_id
                                   ? 'sended-message-item'
                                   : 'received-message-item'
                               }

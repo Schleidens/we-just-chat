@@ -9,7 +9,7 @@ import usersStore from './store/users.store';
 import { auth } from './firebase/main';
 
 const App = () => {
-  const user = usersStore.users.value;
+  const user = usersStore.user.value;
   const _getCurrentUserInformation = usersStore.getCurrentUserInformation;
 
   useEffect(() => {

@@ -7,9 +7,17 @@ export interface Users {
   user_id: string;
 }
 
-const users = signal<null | Users>(null);
+const user = signal<null | Users>(null);
 
 const authLoading = signal<boolean>(true);
+
+const usersList = signal<Users[]>([]);
+
+const usernameSearch = signal<string>('');
+
+const setUsernameSearch = (incomingUsername: string) => {
+  usernameSearch.value = incomingUsername;
+};
 
 const getCurrentUserInformation = async () => {
   try {
@@ -17,9 +25,9 @@ const getCurrentUserInformation = async () => {
 
     const currentUser = await apiFetch('me');
 
-    users.value = currentUser;
+    user.value = currentUser;
   } catch (error) {
-    users.value = null;
+    user.value = null;
     console.log(error);
   } finally {
     authLoading.value = false;
@@ -45,4 +53,38 @@ const setUsername = async (username: string) => {
   }
 };
 
-export default { users, authLoading, getCurrentUserInformation, setUsername };
+const getUsersList = async () => {
+  try {
+    const result = await apiFetch('users');
+
+    const filteredResult = result.filter((i: Users) => i.id !== user.value?.id);
+
+    usersList.value = filteredResult;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const searchInUsersListByUsername = () => {
+  if (!usernameSearch.value) {
+    getUsersList();
+  }
+
+  const result = usersList.value.filter((user: Users) =>
+    user.username?.toLocaleLowerCase().includes(usernameSearch.value)
+  );
+
+  usersList.value = result;
+};
+
+export default {
+  user,
+  authLoading,
+  usersList,
+  usernameSearch,
+  getCurrentUserInformation,
+  setUsername,
+  getUsersList,
+  setUsernameSearch,
+  searchInUsersListByUsername,
+};

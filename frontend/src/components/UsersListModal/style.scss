@@ -1,0 +1,35 @@
+ul.users__list {
+  margin: 0;
+  padding: 0;
+
+  list-style: none;
+
+  li {
+    display: flex;
+    justify-content: space-between;
+
+    margin: 1em 0;
+    padding: 0;
+
+    .details {
+      display: inline-flex;
+
+      img {
+        height: 30px;
+        width: 40px;
+      }
+
+      h3 {
+        margin: 0;
+        padding: 0;
+      }
+    }
+
+    button {
+      background-color: #797979;
+      color: #fff;
+
+      font-weight: 500;
+    }
+  }
+}

@@ -28,6 +28,8 @@ const messagesInDiscussion = signal<Message[]>([]);
 
 //focus discussion data
 const setDiscussion = (discussion: Discussion | null) => {
+  console.log(discussion);
+
   selectedDiscussion.value = discussion;
 };
 
@@ -79,6 +81,28 @@ const getMessagesInDiscussion = async () => {
   }
 };
 
+const getOrCreateDiscussion = async (
+  user1: number | undefined,
+  user2: number | undefined
+) => {
+  try {
+    const discussion = await apiFetch('discussions', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+      },
+
+      body: JSON.stringify({ user1, user2 }),
+    });
+
+    selectedDiscussion.value = discussion;
+  } catch (error) {
+    console.log(error);
+  } finally {
+    getDiscussionsList();
+  }
+};
+
 export {
   selectedDiscussion,
   ownedDiscussions,
@@ -90,4 +114,5 @@ export {
   getMessageTimeFromDate,
   getDiscussionsList,
   getMessagesInDiscussion,
+  getOrCreateDiscussion,
 };
