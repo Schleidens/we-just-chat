@@ -17,6 +17,9 @@ import {
   messagesInDiscussion,
   getDiscussionsList,
   getMessagesInDiscussion,
+  newMessageContent,
+  setNewMessageContent,
+  sendNewMessage,
 } from '../../store/discussion.store';
 import usersStore from '../../store/users.store';
 
@@ -25,6 +28,7 @@ const ChatPage = () => {
   const _selectedDiscussion = selectedDiscussion.value;
   const _messagesLoading = messagesLoading.value;
   const _messagesInDiscussion = messagesInDiscussion.value;
+  const _newMessageContent = newMessageContent.value;
 
   const _user = usersStore.user.value;
 
@@ -157,11 +161,21 @@ const ChatPage = () => {
               </div>
 
               <div className='new-message'>
-                <form className='w-100 d-flex'>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    sendNewMessage();
+                  }}
+                  className='w-100 d-flex'
+                >
                   <textarea
+                    value={_newMessageContent}
                     className='form-control'
                     id='exampleInputPassword1'
                     placeholder='Jessica'
+                    onChange={(e) => {
+                      setNewMessageContent(e.target.value);
+                    }}
                   />
 
                   <button

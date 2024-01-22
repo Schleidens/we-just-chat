@@ -26,6 +26,13 @@ const messagesLoading = signal<boolean>(false);
 
 const messagesInDiscussion = signal<Message[]>([]);
 
+const newMessageContent = signal<string>('');
+
+// utils for message input
+const setNewMessageContent = (message: string) => {
+  newMessageContent.value = message;
+};
+
 //focus discussion data
 const setDiscussion = (discussion: Discussion | null) => {
   console.log(discussion);
@@ -81,6 +88,28 @@ const getMessagesInDiscussion = async () => {
   }
 };
 
+const sendNewMessage = async () => {
+  try {
+    if (newMessageContent) {
+      await apiFetch('messages', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          discussion_id: selectedDiscussion.value?.id,
+          text_body: newMessageContent.value,
+        }),
+      });
+    }
+  } catch (error) {
+    console.log(error);
+  } finally {
+    newMessageContent.value = '';
+    getMessagesInDiscussion();
+  }
+};
+
 const getOrCreateDiscussion = async (
   user1: number | undefined,
   user2: number | undefined
@@ -108,6 +137,7 @@ export {
   ownedDiscussions,
   messagesLoading,
   messagesInDiscussion,
+  newMessageContent,
   setDiscussion,
   getDiscussionName,
   getSenderName,
@@ -115,4 +145,6 @@ export {
   getDiscussionsList,
   getMessagesInDiscussion,
   getOrCreateDiscussion,
+  setNewMessageContent,
+  sendNewMessage,
 };
