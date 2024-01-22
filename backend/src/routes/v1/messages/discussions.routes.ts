@@ -28,8 +28,6 @@ router.get('/discussions', async (req: any, res) => {
       return res.send([]);
     }
 
-    console.log(discussions);
-
     const participantsId: number[] = [];
 
     discussions.forEach((discussion) => {
@@ -67,8 +65,6 @@ router.post('/discussions', async (req: any, res) => {
     const isDiscussionExist: Discussions[] = await sql`
         select * from discussions where (user1 = ${user1} and user2 = ${user2}) or (user1 = ${user2} AND user2 = ${user1})
       `;
-
-    console.log({ exist: isDiscussionExist });
 
     const setParticipantsInDiscussion = async (discussions: Discussions[]) => {
       if (discussions.length !== 0) {
@@ -113,11 +109,6 @@ router.post('/discussions', async (req: any, res) => {
       const discussionsWithParticipants = await setParticipantsInDiscussion(
         newDiscussion,
       );
-
-      console.log({
-        newDiscussion: discussionsWithParticipants,
-        parts: discussionsWithParticipants,
-      });
 
       res.json(discussionsWithParticipants);
     } else {
