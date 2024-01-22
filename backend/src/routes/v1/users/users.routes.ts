@@ -30,4 +30,17 @@ router.put('/me', async (req: any, res) => {
   }
 });
 
+router.get('/users', async (req: any, res) => {
+  try {
+    const usersList = await sql`
+      select * from users
+    `;
+
+    res.json(usersList);
+  } catch (error) {
+    res.status(400).send(error);
+    console.log(error);
+  }
+});
+
 export default router;
