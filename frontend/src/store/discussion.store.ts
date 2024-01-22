@@ -106,7 +106,6 @@ const sendNewMessage = async () => {
     console.log(error);
   } finally {
     newMessageContent.value = '';
-    getMessagesInDiscussion();
   }
 };
 

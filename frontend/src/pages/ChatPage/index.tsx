@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import SimpleBar from 'simplebar-react';
 
+import { auth } from '../../firebase/main';
+
 import Loader from '../../components/Loader';
 import UsersListModal from '../../components/UsersListModal';
 
@@ -39,6 +41,37 @@ const ChatPage = () => {
   useEffect(() => {
     getMessagesInDiscussion();
   }, [_selectedDiscussion]);
+
+  useEffect(() => {
+    const socket = new WebSocket('ws://localhost:3000');
+
+    socket.onmessage = (info) => {
+      const data = JSON.parse(info.data);
+
+      if (data.key === 'new-message') {
+        const updatedSelectedDiscussion = selectedDiscussion.peek();
+
+        if (updatedSelectedDiscussion?.id === data.message.discussion_id) {
+          const allMessageInDiscussion = messagesInDiscussion.peek();
+
+          messagesInDiscussion.value = [
+            ...allMessageInDiscussion,
+            data.message,
+          ];
+        } else if (data.key === 'ping') {
+          socket.send(JSON.stringify({ key: 'pong' }));
+        } else {
+          return;
+        }
+      }
+    };
+
+    socket.onopen = async () => {
+      const token = await auth.currentUser?.getIdToken();
+
+      socket.send(JSON.stringify({ key: 'authToken', token: token }));
+    };
+  }, []);
 
   return (
     <>
