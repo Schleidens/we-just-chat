@@ -40,4 +40,25 @@ router.get('/messages', async (req: any, res) => {
   }
 });
 
+router.post('/messages', async (req: any, res) => {
+  try {
+    const { discussion_id, text_body } = req.body;
+
+    console.log({ body: req.body, user: req.user });
+
+    await sql`
+      insert into messages (
+        sender_id, discussion_id, text_body
+      ) values (
+        ${req.user.id}, ${discussion_id}, ${text_body}
+      )
+    `;
+
+    res.status(200).send('message created');
+  } catch (error) {
+    res.status(400).send(error);
+    console.log(error);
+  }
+});
+
 export default router;
