@@ -34,7 +34,36 @@ main.chat__page {
 
     .list-group {
       &-item {
+        height: 100%;
+        max-height: 65px;
+        min-height: 65px;
+
         margin: 0.2em 0;
+        padding: 0.5em 0.5em;
+
+        background-color: #3d3d3d;
+        color: #fff;
+
+        border: 1px solid #3d3d3d;
+
+        &.active-discussion {
+          background-color: #2b2b2b;
+          border: 1px solid #2b2b2b;
+        }
+
+        .profile-img {
+          height: 30px;
+          width: 30px;
+        }
+
+        .last-message {
+          font-weight: 200;
+          font-size: 14px;
+        }
+
+        .last-time {
+          font-size: 13px;
+        }
       }
     }
   }
@@ -49,7 +78,7 @@ main.chat__page {
 
       background-color: #fff;
 
-      padding: 1em;
+      padding: 1em 0;
 
       height: 70px;
 
@@ -58,6 +87,13 @@ main.chat__page {
 
       .close-chat-btn {
         margin-right: 1em;
+
+        border: none;
+        background: none;
+
+        img {
+          height: 40px;
+        }
       }
     }
 
@@ -93,35 +129,6 @@ main.chat__page {
           list-style: none;
 
           li {
-            .header__message {
-              display: flex;
-
-              img.header__message-img {
-                height: 40px;
-                width: 40px;
-
-                border-radius: 50%;
-                margin-bottom: 5px;
-              }
-
-              &-data {
-                transform: translateY(18px);
-
-                display: inline-flex;
-                h5 {
-                  font-weight: bold;
-                  font-size: 12px;
-
-                  padding: 0 0.5em;
-                }
-
-                h6 {
-                  font-size: 12px;
-
-                  color: #929292;
-                }
-              }
-            }
             &.received-message {
               display: flex;
               flex-direction: column;
@@ -132,15 +139,10 @@ main.chat__page {
               display: flex;
               flex-direction: column;
               align-items: flex-end;
+            }
 
-              .header__message {
-                display: flex;
-                flex-direction: row-reverse;
-
-                &-data {
-                  flex-direction: row-reverse;
-                }
-              }
+            h6 {
+              font-size: 11px;
             }
           }
         }
@@ -148,27 +150,25 @@ main.chat__page {
         .received-message-item {
           padding: 0.5em 1em;
 
-          border-radius: 25px;
+          border-radius: 25px 25px 25px 0;
 
           background-color: #fff;
 
           max-width: 600px;
 
           margin-right: 2em;
-          margin-left: 2.5em;
         }
 
         .sended-message-item {
           padding: 0.5em 1em;
 
-          border-radius: 25px;
+          border-radius: 25px 25px 0 25px;
 
           background-color: #00ff39;
 
           max-width: 600px;
 
           margin-left: 2em;
-          margin-right: 2.5em;
         }
       }
 

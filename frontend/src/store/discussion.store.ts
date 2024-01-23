@@ -7,6 +7,8 @@ export interface Discussion {
   last_message: string;
   user1: number;
   user2: number;
+  created_at: string;
+  updated_at: string;
   participants: Users[];
 }
 
@@ -50,7 +52,7 @@ const getSenderName = (loggedUserId: number, users: Users[]) => {
   return users.find((user) => user.id === loggedUserId);
 };
 
-const getMessageTimeFromDate = (incomingDate: string) => {
+const getTimeFromDate = (incomingDate: string) => {
   const dateObject = new Date(incomingDate);
 
   const formattedTime = dateObject.toLocaleTimeString();
@@ -88,6 +90,23 @@ const getMessagesInDiscussion = async () => {
   }
 };
 
+const setLastMessageInDiscussion = (message: string) => {
+  try {
+    apiFetch(`discussions?id=${selectedDiscussion.value?.id}`, {
+      method: 'PUT',
+      headers: {
+        'content-type': 'application/json',
+      },
+
+      body: JSON.stringify({ message: message }),
+    });
+  } catch (error) {
+    console.log(error);
+  } finally {
+    getDiscussionsList();
+  }
+};
+
 const sendNewMessage = async () => {
   try {
     if (newMessageContent) {
@@ -105,6 +124,7 @@ const sendNewMessage = async () => {
   } catch (error) {
     console.log(error);
   } finally {
+    setLastMessageInDiscussion(newMessageContent.value);
     newMessageContent.value = '';
   }
 };
@@ -140,7 +160,7 @@ export {
   setDiscussion,
   getDiscussionName,
   getSenderName,
-  getMessageTimeFromDate,
+  getTimeFromDate,
   getDiscussionsList,
   getMessagesInDiscussion,
   getOrCreateDiscussion,

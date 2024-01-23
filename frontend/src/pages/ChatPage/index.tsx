@@ -13,8 +13,7 @@ import {
   selectedDiscussion,
   setDiscussion,
   getDiscussionName,
-  getSenderName,
-  getMessageTimeFromDate,
+  getTimeFromDate,
   messagesLoading,
   messagesInDiscussion,
   getDiscussionsList,
@@ -107,12 +106,23 @@ const ChatPage = () => {
           </div>
           <ul className='list-group'>
             {_ownedDiscussions.map((discussion, index) => {
+              const updatedSelectedDiscussion = selectedDiscussion.peek();
               return (
                 <li
                   key={index}
-                  className='list-group-item d-flex justify-content-between align-items-center'
+                  className={`list-group-item d-flex justify-content-between align-items-center ${
+                    _selectedDiscussion !== null &&
+                    updatedSelectedDiscussion?.id === discussion.id
+                      ? 'active-discussion'
+                      : ''
+                  }`}
                   onClick={() => setDiscussion(discussion)}
                 >
+                  <img
+                    className='profile-img'
+                    src='https://ik.imagekit.io/nv2j2amfx9/avatar'
+                    alt=''
+                  />
                   <div className='ms-2 me-auto'>
                     <div className='fw-bold'>
                       {
@@ -122,9 +132,13 @@ const ChatPage = () => {
                         )?.username
                       }
                     </div>
-                    {discussion.last_message}
+                    <span className='last-message'>
+                      {discussion.last_message}
+                    </span>
                   </div>
-                  <span className='badge bg-primary rounded-pill'>14</span>
+                  <div className='last-time'>
+                    {getTimeFromDate(discussion.updated_at)}
+                  </div>
                 </li>
               );
             })}
@@ -144,7 +158,10 @@ const ChatPage = () => {
                 className='close-chat-btn'
                 onClick={() => setDiscussion(null)}
               >
-                X
+                <img
+                  src='https://ik.imagekit.io/nv2j2amfx9/back-button.png'
+                  alt=''
+                />
               </button>
               <span>
                 {
@@ -174,26 +191,6 @@ const ChatPage = () => {
                                 : 'received-message'
                             }
                           >
-                            <div className='header__message'>
-                              <img
-                                className='header__message-img'
-                                src='https://ik.imagekit.io/nv2j2amfx9/avatar'
-                                alt=''
-                              />
-                              <span className='header__message-data'>
-                                <h5>
-                                  {
-                                    getSenderName(
-                                      message.sender_id,
-                                      _selectedDiscussion.participants
-                                    )?.username
-                                  }
-                                </h5>
-                                <h6>
-                                  {getMessageTimeFromDate(message.created_at)}
-                                </h6>
-                              </span>
-                            </div>
                             <div
                               className={
                                 _user?.id === message.sender_id
@@ -203,6 +200,7 @@ const ChatPage = () => {
                             >
                               {message.text_body}
                             </div>
+                            <h6>{getTimeFromDate(message.created_at)}</h6>
                           </li>
                         );
                       })}
