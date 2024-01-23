@@ -47,7 +47,7 @@ const ChatPage = () => {
   }, [_selectedDiscussion]);
 
   useEffect(() => {
-    const socket = new WebSocket('ws://localhost:3000');
+    const socket = new WebSocket(import.meta.env.VITE_WS_URL);
 
     socket.onmessage = (info) => {
       const data = JSON.parse(info.data);
