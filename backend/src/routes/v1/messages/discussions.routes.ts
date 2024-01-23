@@ -124,4 +124,41 @@ router.post('/discussions', async (req: any, res) => {
   }
 });
 
+router.put('/discussions', async (req: any, res) => {
+  try {
+    if (
+      req.query.id === undefined ||
+      req.query.id === 'undefined' ||
+      req.query.id === null ||
+      isNaN(req.query.id)
+    ) {
+      return res.status(400).send("you don't have access to this discussion");
+    }
+
+    const incomingDiscussion = await sql`
+        select * from discussions where id = ${req.query.id}
+    `;
+
+    if (incomingDiscussion.length === 0) {
+      return res.status(404).send("there's no discussion");
+    }
+
+    if (
+      req.user.id === incomingDiscussion[0].user1 ||
+      req.user.id === incomingDiscussion[0].user2
+    ) {
+      await sql`
+        update discussions set last_message = ${req.body.message} where id = ${req.query.id}
+      `;
+
+      res.status(200).send('discussion has been updated');
+    } else {
+      return res.status(400).send("You don't have access to this discussion");
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(404).send(error);
+  }
+});
+
 export default router;

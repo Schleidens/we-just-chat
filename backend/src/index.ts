@@ -20,7 +20,7 @@ App.use(express.json());
 
 App.use(
   cors({
-    origin: ['http://localhost:5175'],
+    origin: [process.env.WEB_LINKS as string],
   }),
 );
 
