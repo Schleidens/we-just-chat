@@ -12,3 +12,29 @@
 
   text-align: center;
 }
+
+.messages__mobile-size {
+  @media (max-width: 800px) {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+.messages__mobile-size__hidden {
+  @media (max-width: 800px) {
+    display: none !important;
+  }
+}
+
+.discussions__mobile-size {
+  @media (max-width: 800px) {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+.discussion__mobile-size__hidden {
+  @media (max-width: 800px) {
+    display: none !important;
+  }
+}

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import SimpleBar from 'simplebar-react';
 
 import { auth } from '../../firebase/main';
@@ -24,6 +24,7 @@ import {
   sendNewMessage,
 } from '../../store/discussion.store';
 import usersStore from '../../store/users.store';
+import messagesHook from '../../hook/messages.hook';
 
 const ChatPage = () => {
   const _ownedDiscussions = ownedDiscussions.value;
@@ -33,6 +34,10 @@ const ChatPage = () => {
   const _newMessageContent = newMessageContent.value;
 
   const _user = usersStore.user.value;
+
+  const messagesRef = useRef<HTMLDivElement>(null);
+
+  messagesHook.useMessagesScroll(messagesRef, _messagesInDiscussion);
 
   useEffect(() => {
     getDiscussionsList();
@@ -76,7 +81,13 @@ const ChatPage = () => {
   return (
     <>
       <main className='chat__page'>
-        <div className='discussion'>
+        <div
+          className={`discussion ${
+            _selectedDiscussion === null
+              ? 'discussions__mobile-size'
+              : 'messages__mobile-size__hidden'
+          }`}
+        >
           <div className='title'>
             <h2>We Just Chat</h2>
           </div>
@@ -121,7 +132,13 @@ const ChatPage = () => {
         </div>
 
         {_selectedDiscussion !== null ? (
-          <div className='chat'>
+          <div
+            className={`chat ${
+              _selectedDiscussion !== null
+                ? 'discussions__mobile-size'
+                : 'discussion__mobile-size__hidden'
+            }`}
+          >
             <div className='title'>
               <button
                 className='close-chat-btn'
@@ -140,8 +157,11 @@ const ChatPage = () => {
             </div>
 
             <div className='chat__box'>
-              <div className='messages'>
-                <SimpleBar style={{ maxHeight: 740 }}>
+              <div
+                className='messages'
+                ref={messagesRef}
+              >
+                <SimpleBar className='top-wrapper'>
                   {!_messagesLoading && (
                     <ul>
                       {_messagesInDiscussion.map((message, index) => {
@@ -222,7 +242,13 @@ const ChatPage = () => {
             </div>
           </div>
         ) : (
-          <div className='no-chat'>
+          <div
+            className={`no-chat ${
+              _selectedDiscussion !== null
+                ? 'discussions__mobile-size'
+                : 'discussion__mobile-size__hidden'
+            }`}
+          >
             <p>Select a chat to start messaging</p>
           </div>
         )}

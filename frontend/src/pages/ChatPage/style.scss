@@ -77,6 +77,11 @@ main.chat__page {
         z-index: 1 !important;
         position: relative;
 
+        .top-wrapper,
+        .simplebar-wrapper {
+          max-height: 100% !important;
+        }
+
         ul {
           margin: 0;
           padding: 0;
