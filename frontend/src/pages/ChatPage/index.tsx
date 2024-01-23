@@ -54,6 +54,25 @@ const ChatPage = () => {
 
       if (data.key === 'new-message') {
         const updatedSelectedDiscussion = selectedDiscussion.peek();
+        const _ownedDiscussions = ownedDiscussions.peek();
+
+        ownedDiscussions.value = _ownedDiscussions
+          .map((discussion) => {
+            if (discussion.id === data.message.discussion_id) {
+              discussion.last_message = data.message.text_body;
+            }
+
+            return discussion;
+          })
+          .sort((a, b) => {
+            if (a.id === data.message.discussion_id) {
+              return -1;
+            } else if (b.id === data.message.discussion_id) {
+              return 1;
+            } else {
+              return 0;
+            }
+          });
 
         if (updatedSelectedDiscussion?.id === data.message.discussion_id) {
           const allMessageInDiscussion = messagesInDiscussion.peek();
@@ -67,6 +86,8 @@ const ChatPage = () => {
         } else {
           return;
         }
+      } else if (data.key === 'new-discussion') {
+        getDiscussionsList();
       }
     };
 
@@ -223,9 +244,21 @@ const ChatPage = () => {
                     value={_newMessageContent}
                     className='form-control'
                     id='exampleInputPassword1'
-                    placeholder='Jessica'
+                    placeholder='New message'
                     onChange={(e) => {
                       setNewMessageContent(e.target.value);
+                    }}
+                    onKeyUp={(e) => {
+                      const _newMessageContent = newMessageContent.peek();
+
+                      if (
+                        e.key === 'Enter' &&
+                        _newMessageContent.split('\n').join('').length > 0
+                      ) {
+                        sendNewMessage();
+                      } else {
+                        return;
+                      }
                     }}
                   />
 

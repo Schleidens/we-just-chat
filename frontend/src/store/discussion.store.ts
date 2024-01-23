@@ -90,23 +90,6 @@ const getMessagesInDiscussion = async () => {
   }
 };
 
-const setLastMessageInDiscussion = (message: string) => {
-  try {
-    apiFetch(`discussions?id=${selectedDiscussion.value?.id}`, {
-      method: 'PUT',
-      headers: {
-        'content-type': 'application/json',
-      },
-
-      body: JSON.stringify({ message: message }),
-    });
-  } catch (error) {
-    console.log(error);
-  } finally {
-    getDiscussionsList();
-  }
-};
-
 const sendNewMessage = async () => {
   try {
     if (newMessageContent) {
@@ -124,7 +107,6 @@ const sendNewMessage = async () => {
   } catch (error) {
     console.log(error);
   } finally {
-    setLastMessageInDiscussion(newMessageContent.value);
     newMessageContent.value = '';
   }
 };
