@@ -92,7 +92,9 @@ const getMessagesInDiscussion = async () => {
 
 const sendNewMessage = async () => {
   try {
-    if (newMessageContent) {
+    if (newMessageContent.value) {
+      const incomingMessage = newMessageContent.value;
+      newMessageContent.value = '';
       await apiFetch('messages', {
         method: 'POST',
         headers: {
@@ -100,14 +102,12 @@ const sendNewMessage = async () => {
         },
         body: JSON.stringify({
           discussion_id: selectedDiscussion.value?.id,
-          text_body: newMessageContent.value,
+          text_body: incomingMessage,
         }),
       });
     }
   } catch (error) {
     console.log(error);
-  } finally {
-    newMessageContent.value = '';
   }
 };
 
