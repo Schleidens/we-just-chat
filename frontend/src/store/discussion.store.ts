@@ -35,6 +35,17 @@ const setNewMessageContent = (message: string) => {
   newMessageContent.value = message;
 };
 
+// emoji store and utils
+const isEmojiModalOpen = signal<boolean>(false);
+
+const triggerEmojiModal = () => {
+  isEmojiModalOpen.value = !isEmojiModalOpen.value;
+};
+
+const addEmojiInMessage = (emoji: string) => {
+  newMessageContent.value = newMessageContent.value + emoji;
+};
+
 //focus discussion data
 const setDiscussion = (discussion: Discussion | null) => {
   console.log(discussion);
@@ -139,6 +150,7 @@ export {
   messagesLoading,
   messagesInDiscussion,
   newMessageContent,
+  isEmojiModalOpen,
   setDiscussion,
   getDiscussionName,
   getSenderName,
@@ -148,4 +160,6 @@ export {
   getOrCreateDiscussion,
   setNewMessageContent,
   sendNewMessage,
+  addEmojiInMessage,
+  triggerEmojiModal,
 };
