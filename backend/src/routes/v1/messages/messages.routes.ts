@@ -90,6 +90,10 @@ router.post('/messages', async (req: any, res) => {
         }
       });
 
+      await sql`
+        update discussions set last_message = ${lastMessage[0].text_body} where id = ${discussion_id}
+      `;
+
       res.status(200).send({ message: 'message created' });
     } else {
       return res.status(400).send("You don't have access to this discussion");

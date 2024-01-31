@@ -35,6 +35,17 @@ const setNewMessageContent = (message: string) => {
   newMessageContent.value = message;
 };
 
+// emoji store and utils
+const isEmojiModalOpen = signal<boolean>(false);
+
+const triggerEmojiModal = () => {
+  isEmojiModalOpen.value = !isEmojiModalOpen.value;
+};
+
+const addEmojiInMessage = (emoji: string) => {
+  newMessageContent.value = newMessageContent.value + emoji;
+};
+
 //focus discussion data
 const setDiscussion = (discussion: Discussion | null) => {
   console.log(discussion);
@@ -90,26 +101,11 @@ const getMessagesInDiscussion = async () => {
   }
 };
 
-const setLastMessageInDiscussion = (message: string) => {
-  try {
-    apiFetch(`discussions?id=${selectedDiscussion.value?.id}`, {
-      method: 'PUT',
-      headers: {
-        'content-type': 'application/json',
-      },
-
-      body: JSON.stringify({ message: message }),
-    });
-  } catch (error) {
-    console.log(error);
-  } finally {
-    getDiscussionsList();
-  }
-};
-
 const sendNewMessage = async () => {
   try {
-    if (newMessageContent) {
+    if (newMessageContent.value) {
+      const incomingMessage = newMessageContent.value;
+      newMessageContent.value = '';
       await apiFetch('messages', {
         method: 'POST',
         headers: {
@@ -117,15 +113,12 @@ const sendNewMessage = async () => {
         },
         body: JSON.stringify({
           discussion_id: selectedDiscussion.value?.id,
-          text_body: newMessageContent.value,
+          text_body: incomingMessage,
         }),
       });
     }
   } catch (error) {
     console.log(error);
-  } finally {
-    setLastMessageInDiscussion(newMessageContent.value);
-    newMessageContent.value = '';
   }
 };
 
@@ -157,6 +150,7 @@ export {
   messagesLoading,
   messagesInDiscussion,
   newMessageContent,
+  isEmojiModalOpen,
   setDiscussion,
   getDiscussionName,
   getSenderName,
@@ -166,4 +160,6 @@ export {
   getOrCreateDiscussion,
   setNewMessageContent,
   sendNewMessage,
+  addEmojiInMessage,
+  triggerEmojiModal,
 };

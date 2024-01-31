@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import SimpleBar from 'simplebar-react';
+import EmojiPicker from 'emoji-picker-react';
 
 import { auth } from '../../firebase/main';
 
@@ -21,6 +22,9 @@ import {
   newMessageContent,
   setNewMessageContent,
   sendNewMessage,
+  isEmojiModalOpen,
+  triggerEmojiModal,
+  addEmojiInMessage,
 } from '../../store/discussion.store';
 import usersStore from '../../store/users.store';
 import messagesHook from '../../hook/messages.hook';
@@ -31,10 +35,12 @@ const ChatPage = () => {
   const _messagesLoading = messagesLoading.value;
   const _messagesInDiscussion = messagesInDiscussion.value;
   const _newMessageContent = newMessageContent.value;
+  const _isEmojiModalOpen = isEmojiModalOpen.value;
 
   const _user = usersStore.user.value;
 
   const messagesRef = useRef<HTMLDivElement>(null);
+  const emojiModalRef = useRef<HTMLDivElement>(null);
 
   messagesHook.useMessagesScroll(messagesRef, _messagesInDiscussion);
 
@@ -47,13 +53,32 @@ const ChatPage = () => {
   }, [_selectedDiscussion]);
 
   useEffect(() => {
-    const socket = new WebSocket('ws://localhost:3000');
+    const socket = new WebSocket(import.meta.env.VITE_WS_URL);
 
     socket.onmessage = (info) => {
       const data = JSON.parse(info.data);
 
       if (data.key === 'new-message') {
         const updatedSelectedDiscussion = selectedDiscussion.peek();
+        const _ownedDiscussions = ownedDiscussions.peek();
+
+        ownedDiscussions.value = _ownedDiscussions
+          .map((discussion) => {
+            if (discussion.id === data.message.discussion_id) {
+              discussion.last_message = data.message.text_body;
+            }
+
+            return discussion;
+          })
+          .sort((a, b) => {
+            if (a.id === data.message.discussion_id) {
+              return -1;
+            } else if (b.id === data.message.discussion_id) {
+              return 1;
+            } else {
+              return 0;
+            }
+          });
 
         if (updatedSelectedDiscussion?.id === data.message.discussion_id) {
           const allMessageInDiscussion = messagesInDiscussion.peek();
@@ -67,6 +92,8 @@ const ChatPage = () => {
         } else {
           return;
         }
+      } else if (data.key === 'new-discussion') {
+        getDiscussionsList();
       }
     };
 
@@ -76,6 +103,25 @@ const ChatPage = () => {
       socket.send(JSON.stringify({ key: 'authToken', token: token }));
     };
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        emojiModalRef.current &&
+        !emojiModalRef.current.contains(event.target as Node)
+      ) {
+        isEmojiModalOpen.value = false;
+      }
+    };
+
+    if (_isEmojiModalOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [_isEmojiModalOpen]);
 
   return (
     <>
@@ -212,6 +258,19 @@ const ChatPage = () => {
               </div>
 
               <div className='new-message'>
+                <div
+                  ref={emojiModalRef}
+                  className={`emoji-board ${
+                    _isEmojiModalOpen ? 'open' : 'close'
+                  }`}
+                >
+                  <EmojiPicker
+                    className='emoji-board'
+                    onEmojiClick={(emoji) => {
+                      addEmojiInMessage(emoji.emoji);
+                    }}
+                  />
+                </div>
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
@@ -219,19 +278,39 @@ const ChatPage = () => {
                   }}
                   className='w-100 d-flex'
                 >
+                  <div
+                    className='emoji-btn'
+                    onClick={() => {
+                      triggerEmojiModal();
+                    }}
+                  >
+                    ☺
+                  </div>
                   <textarea
                     value={_newMessageContent}
                     className='form-control'
                     id='exampleInputPassword1'
-                    placeholder='Jessica'
+                    placeholder='Write a message....'
                     onChange={(e) => {
                       setNewMessageContent(e.target.value);
+                    }}
+                    onKeyUp={(e) => {
+                      const _newMessageContent = newMessageContent.peek();
+
+                      if (
+                        e.key === 'Enter' &&
+                        _newMessageContent.split('\n').join('').length > 0
+                      ) {
+                        sendNewMessage();
+                      } else {
+                        return;
+                      }
                     }}
                   />
 
                   <button
                     type='submit'
-                    className='btn btn-primary'
+                    className='btn btn-primary send-btn'
                   >
                     Send
                   </button>

@@ -187,11 +187,44 @@ main.chat__page {
         -webkit-box-shadow: 0px -2px 5px 0px rgba(0, 0, 0, 0.75);
         -moz-box-shadow: 0px -2px 5px 0px rgba(0, 0, 0, 0.75);
 
+        .emoji-board {
+          position: absolute;
+          bottom: 102%;
+          left: 0%;
+
+          &.open {
+            display: block;
+          }
+
+          &.close {
+            display: none;
+          }
+        }
+
         form {
           height: 100%;
+
+          div.emoji-btn {
+            height: 100%;
+            width: 60px;
+
+            font-size: 2.2em;
+
+            text-align: center;
+
+            border: none;
+            background: none;
+
+            line-height: 1.9;
+
+            cursor: pointer;
+          }
+
           textarea {
             border: none;
             outline: none;
+
+            padding-top: 23px;
 
             &:focus {
               border: none !important;
@@ -201,7 +234,7 @@ main.chat__page {
             resize: none;
           }
 
-          button {
+          button.send-btn {
             height: 100%;
 
             border-radius: 0;

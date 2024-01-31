@@ -27,7 +27,7 @@ App.use(
 App.use(authMiddleware, usersRoutes);
 App.use(authMiddleware, discussionsRoutes);
 App.use(authMiddleware, messagesRoutes);
-
-server.listen(3000, () => {
-  console.log('server started');
+const port = process.env.PORT || 3000;
+server.listen(port, () => {
+  console.log('server started on port : ' + port);
 });

@@ -1,6 +1,7 @@
 import express from 'express';
 
 import sql from '../../../db/db.config';
+import wss from '../../../server/ws.server';
 
 const router = express.Router();
 
@@ -21,7 +22,7 @@ interface Discussions {
 router.get('/discussions', async (req: any, res) => {
   try {
     const discussions = await sql`
-            select * from discussions where user1 = ${req.user.id} or user2 = ${req.user.id}
+            select * from discussions where user1 = ${req.user.id} or user2 = ${req.user.id} order by updated_at desc
         `;
 
     if (discussions.length === 0) {
@@ -106,6 +107,17 @@ router.post('/discussions', async (req: any, res) => {
           returning *
         `;
 
+      wss.clients.forEach((client: any) => {
+        if (
+          (client.user_id === user1 || client.user_id === user2) &&
+          client.readyState === client.OPEN
+        ) {
+          client.send(JSON.stringify({ key: 'new-discussion' }));
+        } else {
+          return;
+        }
+      });
+
       const discussionsWithParticipants = await setParticipantsInDiscussion(
         newDiscussion,
       );
@@ -121,43 +133,6 @@ router.post('/discussions', async (req: any, res) => {
   } catch (error) {
     res.status(404).send(error);
     console.log(error);
-  }
-});
-
-router.put('/discussions', async (req: any, res) => {
-  try {
-    if (
-      req.query.id === undefined ||
-      req.query.id === 'undefined' ||
-      req.query.id === null ||
-      isNaN(req.query.id)
-    ) {
-      return res.status(400).send("you don't have access to this discussion");
-    }
-
-    const incomingDiscussion = await sql`
-        select * from discussions where id = ${req.query.id}
-    `;
-
-    if (incomingDiscussion.length === 0) {
-      return res.status(404).send("there's no discussion");
-    }
-
-    if (
-      req.user.id === incomingDiscussion[0].user1 ||
-      req.user.id === incomingDiscussion[0].user2
-    ) {
-      await sql`
-        update discussions set last_message = ${req.body.message} where id = ${req.query.id}
-      `;
-
-      res.status(200).send('discussion has been updated');
-    } else {
-      return res.status(400).send("You don't have access to this discussion");
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(404).send(error);
   }
 });
 
